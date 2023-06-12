@@ -30,24 +30,32 @@ exports.addNote = (req, res) => {
 };
 
 exports.updateNote = (req, res) => {
-    let noteId = req.body.noteId,
-        createdBy = "Marwan",
+    let createdBy = "Marwan",
         createdDate = new Date();
 
     //req.body
-    let title = req.body.title,
+    let noteId = req.body.noteId,
+        title = req.body.title,
         content = req.body.content;
-    if (!title || !content) {
+    if (!title || !content || !noteId) {
         return res.status(500).send({
-            error: "Title and Content should not be empty",
+            error: "NoteId, Title and Content should not be empty",
+        });
+    }
+
+    let noteItem = store.getItem(noteId);
+    if (!noteItem) {
+        return res.status(500).send({
+            error: "NoteId doesn't exist!",
         });
     }
 
     let Note = model.Note;
     let noteObj = new Note(noteId, title, createdBy, content, createdDate);
     console.log(noteId);
+    console.log(noteObj);
     store.setItem(noteId, noteObj);
-    res.status(201).send("Successfully Updated Note");
+    return res.status(200).send("Successfully Note Updated");
 };
 
 exports.deleteNote = (req, res) => {
